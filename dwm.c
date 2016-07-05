@@ -283,6 +283,8 @@ static Display *dpy;
 static DC dc;
 static Monitor *mons = NULL, *selmon = NULL;
 static Window root;
+static int globalborder ;
+static int globalborder ;
 
 /* configuration, allows nested code to access above variables */
 #include "config.h"
@@ -1351,10 +1353,16 @@ void
 resizeclient(Client *c, int x, int y, int w, int h) {
 	XWindowChanges wc;
 
-	c->oldx = c->x; c->x = wc.x = x;
-	c->oldy = c->y; c->y = wc.y = y;
-	c->oldw = c->w; c->w = wc.width = w;
-	c->oldh = c->h; c->h = wc.height = h;
+	if(c->isfloating || selmon->lt[selmon->sellt]->arrange == NULL ) { globalborder = 0 ; }
+	else {
+		if (selmon->lt[selmon->sellt]->arrange == monocle) { globalborder = 0 - borderpx ; }
+		else { globalborder = gappx ; }
+	}
+
+	c->oldx = c->x; c->x = wc.x = x + globalborder;
+	c->oldy = c->y; c->y = wc.y = y + globalborder;
+	c->oldw = c->w; c->w = wc.width = w - 2 * globalborder;
+	c->oldh = c->h; c->h = wc.height = h - 2 * globalborder;
 	wc.border_width = c->bw;
 	XConfigureWindow(dpy, c->win, CWX|CWY|CWWidth|CWHeight|CWBorderWidth, &wc);
 	configure(c);
@@ -1703,28 +1711,31 @@ textnw(const char *text, unsigned int len) {
 
 void
 tile(Monitor *m) {
-	unsigned int i, n, h, mw, my, ty;
-	Client *c;
+	 unsigned int i, n, h, mw, my, ty;
+	 Client *c;
 
-	for(n = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), n++);
-	if(n == 0)
-		return;
+         for(n = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), n++)
+               ;                        /* Seems to count the number of windows */
+	 if(n == 0)
+	       return;                  /* Abort if there aren't any */
 
-	if(n > m->nmaster)
-		mw = m->nmaster ? m->ww * m->mfact : 0;
-	else
-		mw = m->ww;
-	for(i = my = ty = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), i++)
-		if(i < m->nmaster) {
-			h = (m->wh - my) / (MIN(n, m->nmaster) - i);
-			resize(c, m->wx, m->wy + my, mw - (2*c->bw), h - (2*c->bw), False);
-			my += HEIGHT(c);
-		}
-		else {
-			h = (m->wh - ty) / (n - i);
-			resize(c, m->wx + mw, m->wy + ty, m->ww - mw - (2*c->bw), h - (2*c->bw), False);
-			ty += HEIGHT(c);
-		}
+	 if(n > m->nmaster)             /* figure out if the stack will be used */
+	       mw = m->nmaster ? m->ww * m->mfact : 0;
+	 else
+	       mw = m->ww;
+
+	 for(i = my = ty = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), i++) {
+	       if(i < m->nmaster) {     /* Place master windows */
+	             h = (m->wh - my) / (MIN(n, m->nmaster) - i);
+		     resize(c, m->wx, m->wy + my, mw - (2*c->bw), h - (2*c->bw), False);
+		     my += HEIGHT(c) + 2 * globalborder;
+	       }
+	       else {                   /* Place stack windows */
+		     h = (m->wh - ty) / (n - i);
+		     resize(c, m->wx + mw, m->wy + ty, m->ww - mw - (2*c->bw), h - (2*c->bw), False);
+		     ty += HEIGHT(c) + 2 * globalborder;
+	       }
+         }
 }
 
 void
