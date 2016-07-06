@@ -1737,7 +1737,7 @@ tile(Monitor *m) {
                                mw - (2*c->bw),
                                h - (2*c->bw),
                                False);
-		     my += HEIGHT(c) +  globalborder;
+		     my += HEIGHT(c) + globalborder;
 	       }
 	       else {                   /* Place stack windows */
 		     h = (m->wh - ty) / (n - i);
