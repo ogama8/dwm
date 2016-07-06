@@ -5,8 +5,8 @@ static const char font[]            = "-*-*-terminus-medium-*-*-*-16-*-*-*-*-*-*
 static const char normbordercolor[] = "#444444";
 static const char normbgcolor[]     = "#222222";
 static const char normfgcolor[]     = "#bbbbbb";
-static const char selbordercolor[]  = "#003377";
-static const char selbgcolor[]      = "#003377";
+static const char selbordercolor[]  = "#006677";
+static const char selbgcolor[]      = "#006677";
 static const char selfgcolor[]      = "#eeeeee";
 static const unsigned int borderpx  = 1;        /* border pixel of windows */
 static const unsigned int gappx     = 16;       /* border pixel bet. windows */
@@ -26,7 +26,7 @@ static const Rule rules[] = {
 /* layout(s) */
 static const int nmaster      = 1;      /* number of clients in the master area */
 static const float mfact      = 0.55;   /* factor of master area size [0.05..0.95] */
-static const Bool resizehints = True;   /* True means respect size hints in tiled resizals */
+static const Bool resizehints = False;   /* True means respect size hints in tiled resizals */
 
 static const Layout layouts[] = {
 	/* symbol     arrange function */

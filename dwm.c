@@ -1359,11 +1359,16 @@ resizeclient(Client *c, int x, int y, int w, int h) {
 		else { globalborder = gappx ; }
 	}
 
-	c->oldx = c->x; c->x = wc.x = x + globalborder;
+	c->oldx = c->x; c->x = wc.x = x + globalborder / 2;
+	//c->oldx = c->x; c->x = wc.x = x + globalborder;
 	c->oldy = c->y; c->y = wc.y = y + globalborder;
+	//c->oldy = c->y; c->y = wc.y = y + globalborder;
+        //c->oldw = c->w; c->w = wc.width = w - globalborder;
 	c->oldw = c->w; c->w = wc.width = w - 2 * globalborder;
 	c->oldh = c->h; c->h = wc.height = h - 2 * globalborder;
-	wc.border_width = c->bw;
+	//c->oldh = c->h; c->h = wc.height = h - 2 * globalborder;
+
+        wc.border_width = c->bw;
 	XConfigureWindow(dpy, c->win, CWX|CWY|CWWidth|CWHeight|CWBorderWidth, &wc);
 	configure(c);
 	XSync(dpy, False);
@@ -1727,13 +1732,21 @@ tile(Monitor *m) {
 	 for(i = my = ty = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), i++) {
 	       if(i < m->nmaster) {     /* Place master windows */
 	             h = (m->wh - my) / (MIN(n, m->nmaster) - i);
-		     resize(c, m->wx, m->wy + my, mw - (2*c->bw), h - (2*c->bw), False);
-		     my += HEIGHT(c) + 2 * globalborder;
+		     resize(c, m->wx + globalborder / 2,
+                               m->wy + my,
+                               mw - (2*c->bw),
+                               h - (2*c->bw),
+                               False);
+		     my += HEIGHT(c) +  globalborder;
 	       }
 	       else {                   /* Place stack windows */
 		     h = (m->wh - ty) / (n - i);
-		     resize(c, m->wx + mw, m->wy + ty, m->ww - mw - (2*c->bw), h - (2*c->bw), False);
-		     ty += HEIGHT(c) + 2 * globalborder;
+		     resize(c, m->wx + mw - globalborder / 2,
+                               m->wy + ty,
+                               m->ww - mw - (2*c->bw) + globalborder,
+                               h - (2*c->bw),
+                               False);
+		     ty += HEIGHT(c) + globalborder;
 	       }
          }
 }
