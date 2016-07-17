@@ -758,7 +758,7 @@ drawbar(Monitor *m) {
 	dc.x += dc.w;
 	x = dc.x;
 	dc.w = TEXTW(stext);
-	dc.x = m->ww - dc.w;
+	dc.x = m->ww - dc.w + 9;  // This, for me makes the bar edge half-flush with the monitor edge
 	if(dc.x < x) {
 		dc.x = x;
 		dc.w = m->ww - x;
